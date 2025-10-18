@@ -11,54 +11,65 @@ def newCommand():
 
 def interpreter(inputValues):
     inputValues = ''.join('1' if bit == '\t' else '0' if bit == ' ' else bit for bit in inputValues)    #Convert BrainRot to Binary
-    linesList = inputValues.split('\n')     #Split lines
+    if '//' in inputValues:
+        inputValues = inputValues.split('//', 1)[0]
 
-    for line in linesList:
-        if '//' in line:
-            line = line.split('//', 1)[0]
+    if not inputValues.strip():
+        return  # Skip blank/comment-only lines early
 
-        if not line.strip():
-            continue  # Skip blank/comment-only lines early
+    binary = list(inputValues) # Convert the line into a list of characters again
+    valuesOutput = ""
+    i = 0
+    lenInputValues = len(inputValues)
+    while i + 8 <= lenInputValues:
+        ASCII_8bits = inputValues[i:i+8]
+        i += 8
 
-        binary = list(line) # Convert the line into a list of characters again
-        lineOutput = ""
-        i = 0
-        lenLine = len(line)
-        while i + 8 <= lenLine:
-            ASCII_8bits = line[i:i+8]
-            i += 8
+        char = ASCII_dict.reversed_ascii_dict.get(ASCII_8bits)
+        if char:
+            valuesOutput += char
+        else:
+            print(f"[\033[31mFAILED\033[0m] Unknown binary sequence: {ASCII_8bits}")
+            break
 
-            char = ASCII_dict.reversed_ascii_dict.get(ASCII_8bits)
-            if char:
-                lineOutput += char
-            else:
-                print(f"[\033[31mFAILED\033[0m] Unknown binary sequence: {ASCII_8bits}")
+    if i<lenInputValues:
+        print(f"[\033[31mWARNING\033[0m] Ignoring leftover bits: {inputValues[i:]}")
+
+    if valuesOutput:
+        print(valuesOutput)
+
+
+def brainrot(targetFile):
+    global currentDir
+    if not targetFile:
+        while True:   
+            inputValues = input(">>> ")
+            if inputValues in ("e", "exit"):
                 break
+            interpreter(inputValues)
+    else:
+        targetFileDir = Path(currentDir / targetFile).resolve()
+        if targetFileDir.exists():
+            with targetFileDir.open("r") as file:
+                for line in file:
+                    interpreter(line)
+            return
 
-        if binary:
-            print(f"[\033[31mWARNING\033[0m] Ignoring leftover bits: {line[i:]}")
-
-        if lineOutput:
-            print(lineOutput)
-
+        targetFileDir = Path(targetFile).resolve() 
+        if targetFileDir.exists():
+            with targetFileDir.open("r") as file:
+                for line in file:
+                    interpreter(line)
+            return
         
+        print(f"[\033[31mFAILED\033[0m] No file was found!")
 
-def brainrotTranslateDirectly(_=None):
-    inputValues = ""
-    while inputValues not in ("e", "exit"):
-        inputValues = input(">>> ")
-        interpreter(inputValues)
-    return
-
-
-def changeDirCommand(inputCommand):
+def changeDirCommand(targetDir):
     global currentDir
 
-    if len(inputCommand) < 2:
+    if not targetDir:
         currentDir = Path.home()
         return
-
-    targetDir = inputCommand[1]
 
     if targetDir == "/":
         # Linux/macOS root is / and Windows is C:\
@@ -115,17 +126,16 @@ def main():
             continue
 
         command =  inputCommand[0]
+        target = " ".join(inputCommand[1:])
 
         if command in commandList:
-            commandList[command](inputCommand)
+            commandList[command](target)
             continue
 
         else:
             # Navigate to the file to translate it
             print("Unknown Command!")
         
-
-
 
 greetMessage = """
      ############################
@@ -139,7 +149,7 @@ Welcome to BrainRot interpreter!
 brainrotCommand = {
     changeDirCommand: ("cd", "CD"),
     listDirContent: ("ls", "LS"),
-    brainrotTranslateDirectly: ("BrainRot", "brainrot", "br"), 
+    brainrot: ("BrainRot", "brainrot", "br"), 
     brainrot2binary: ("BrainRot2Binary", "brainrot2binary", "br2b"), 
     binary2brainrot: ("Binary2BrainRot", "binary2brainrot", "b2br"),
     exitCommand: ("e", "E", "exit", "Exit", "EXIT")
