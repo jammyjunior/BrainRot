@@ -1,4 +1,6 @@
-
+from src import ASCII_dict
+from assets import Binary2BrainRot
+from assets import BrainRot2Binary
 from pathlib import Path
 import platform
 
@@ -6,8 +8,32 @@ currentDir = Path(__file__).resolve().parent
 def newCommand():
     return input(f"\033[1;32;40minterpreter@brainrot\033[0m: \033[1;32;34m{currentDir}\033[0m$ ").split()
 
-def brainrot():
-    print("Hello from BrainRot!")
+def interpreter(inputValues):
+    outputValues = ""
+    def binaryToCharacter(ASCII_8bits):
+        global outputValues
+        if ASCII_8bits in ASCII_dict.reversed_ascii_dict.keys():
+            outputValues = outputValues + ASCII_dict.reversed_ascii_dict[ASCII_8bits]
+        else:
+            print("ERROR!!!")       #Modify this one later
+    
+    while len(inputValues)>7:
+        ASCII_8bits = ""
+        for _ in range(7):
+            ASCII_8bits+=inputValues[0]
+            del inputValues[0]
+        binaryToCharacter(ASCII_8bits)
+
+    print(outputValues)
+
+        
+
+def brainrot(_=None):
+    inputValues = ""
+    while inputValues not in ("e", "exit"):
+        inputValues = input(">>> ")
+        interpreter(inputValues)
+    return
 
 
 def changeDirCommand(inputCommand):
@@ -82,7 +108,7 @@ Welcome to BrainRot interpreter!
 brainrotCommand = {
     changeDirCommand: ("cd", "CD"),
     listDirContent: ("ls", "LS"),
-    brainrot: ("BrainRot", "brainrot"), 
+    brainrot: ("BrainRot", "brainrot", "br"), 
     brainrot2binary: ("BrainRot2Binary", "brainrot2binary", "br2b"), 
     binary2brainrot: ("Binary2BrainRot", "binary2brainrot", "b2br"),
     exitCommand: ("e", "E", "exit", "Exit", "EXIT")
