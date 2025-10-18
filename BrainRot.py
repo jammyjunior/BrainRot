@@ -5,30 +5,45 @@ from pathlib import Path
 import platform
 
 currentDir = Path(__file__).resolve().parent
+
 def newCommand():
     return input(f"\033[1;32;40minterpreter@brainrot\033[0m: \033[1;32;34m{currentDir}\033[0m$ ").split()
 
 def interpreter(inputValues):
-    outputValues = ""
-    def binaryToCharacter(ASCII_8bits):
-        global outputValues
-        if ASCII_8bits in ASCII_dict.reversed_ascii_dict.keys():
-            outputValues = outputValues + ASCII_dict.reversed_ascii_dict[ASCII_8bits]
-        else:
-            print("ERROR!!!")       #Modify this one later
-    
-    while len(inputValues)>7:
-        ASCII_8bits = ""
-        for _ in range(7):
-            ASCII_8bits+=inputValues[0]
-            del inputValues[0]
-        binaryToCharacter(ASCII_8bits)
+    inputValues = ''.join('1' if bit == '\t' else '0' if bit == ' ' else bit for bit in inputValues)    #Convert BrainRot to Binary
+    linesList = inputValues.split('\n')     #Split lines
 
-    print(outputValues)
+    for line in linesList:
+        if '//' in line:
+            line = line.split('//', 1)[0]
+
+        if not line.strip():
+            continue  # Skip blank/comment-only lines early
+
+        binary = list(line) # Convert the line into a list of characters again
+        lineOutput = ""
+        i = 0
+        lenLine = len(line)
+        while i + 8 <= lenLine:
+            ASCII_8bits = line[i:i+8]
+            i += 8
+
+            char = ASCII_dict.reversed_ascii_dict.get(ASCII_8bits)
+            if char:
+                lineOutput += char
+            else:
+                print(f"[\033[31mFAILED\033[0m] Unknown binary sequence: {ASCII_8bits}")
+                break
+
+        if binary:
+            print(f"[\033[31mWARNING\033[0m] Ignoring leftover bits: {line[i:]}")
+
+        if lineOutput:
+            print(lineOutput)
 
         
 
-def brainrot(_=None):
+def brainrotTranslateDirectly(_=None):
     inputValues = ""
     while inputValues not in ("e", "exit"):
         inputValues = input(">>> ")
@@ -93,8 +108,24 @@ def brainrot2binary():
 def binary2brainrot():
     print("Hello from Binary2BrainRot!")
 
-def interpreter():
-    print("Hello from interpreter!")
+def main():
+    while True:
+        inputCommand = newCommand()
+        if not inputCommand:
+            continue
+
+        command =  inputCommand[0]
+
+        if command in commandList:
+            commandList[command](inputCommand)
+            continue
+
+        else:
+            # Navigate to the file to translate it
+            print("Unknown Command!")
+        
+
+
 
 greetMessage = """
      ############################
@@ -108,7 +139,7 @@ Welcome to BrainRot interpreter!
 brainrotCommand = {
     changeDirCommand: ("cd", "CD"),
     listDirContent: ("ls", "LS"),
-    brainrot: ("BrainRot", "brainrot", "br"), 
+    brainrotTranslateDirectly: ("BrainRot", "brainrot", "br"), 
     brainrot2binary: ("BrainRot2Binary", "brainrot2binary", "br2b"), 
     binary2brainrot: ("Binary2BrainRot", "binary2brainrot", "b2br"),
     exitCommand: ("e", "E", "exit", "Exit", "EXIT")
@@ -122,23 +153,6 @@ commandList = {
 
 if __name__ == "__main__":
     print(greetMessage)
-    while True:
-        inputCommand = newCommand()
-        if not inputCommand:
-            continue
-
-        command =  inputCommand[0]
-
-        if command in commandList:
-            commandList[command](inputCommand)
-            continue
-        try:
-            if inputCommand[0] in ("0", "1", "\t", " "):    #Remember the input is a list !!!
-                interpreter()
-                continue
-        except Exception:
-            pass
-        
-        print("Unknown Command!")
+    main()
             
             
