@@ -1,13 +1,6 @@
 from src import ASCII_dict
-from assets import Binary2BrainRot
-from assets import BrainRot2Binary
 from pathlib import Path
 import platform
-
-currentDir = Path(__file__).resolve().parent
-
-def newCommand():
-    return input(f"\033[1;32;40minterpreter@brainrot\033[0m: \033[1;32;34m{currentDir}\033[0m$ ").split()
 
 def interpreter(inputValues):
     inputValues = ''.join('1' if bit == '\t' else '0' if bit == ' ' else bit for bit in inputValues)    #Convert BrainRot to Binary
@@ -16,8 +9,7 @@ def interpreter(inputValues):
 
     if not inputValues.strip():
         return  # Skip blank/comment-only lines early
-
-    binary = list(inputValues) # Convert the line into a list of characters again
+    
     valuesOutput = ""
     i = 0
     lenInputValues = len(inputValues)
@@ -64,9 +56,103 @@ def brainrot(targetFile):
         
         print(f"[\033[31mFAILED\033[0m] No file was found!")
 
+def brainrot2binary(targetFile):
+    global currentDir
+    if not targetFile:
+        print("Welcome to BrainRot2Binary! Please provide the file path!")
+        print("For more information, go to https://github.com/jammyjunior/BrainRot.")
+    else:
+        def br2bInterpreter(targetFilePath):
+            targetFileContent = []
+            outputFilePath = targetFilePath.with_stem(targetFilePath.stem + "_brainrot2binary")
+            with targetFilePath.open("r") as tf:
+                for line in tf:
+                    targetFileContent.append(line)
+
+            targetFileContent = [
+                ''.join('1' if bit == '\t' else '0' if bit == ' ' else bit for bit in line)
+                  for line in targetFileContent
+            ]    #Convert BrainRot to Binary
+
+            with outputFilePath.open("w") as of:
+                for line in targetFileContent:
+                    of.write(line)
+
+            print(f"[\033[32mOK\033[0m] File save to: {outputFilePath}")
+
+        targetFilePath = Path(currentDir / targetFile).resolve()
+        if targetFilePath.exists():
+            br2bInterpreter(targetFilePath)
+            return
+
+        targetFilePath = Path(targetFile).resolve() 
+        if targetFilePath.exists():
+            br2bInterpreter(targetFilePath)
+            return
+        
+        print(f"[\033[31mFAILED\033[0m] No file was found!")
+
+def binary2brainrot(targetFile):
+    global currentDir
+    if not targetFile:
+        print("Welcome to Binary2BrainRot! Please provide the file path!")
+        print("For more information, go to https://github.com/jammyjunior/BrainRot.")
+    else:
+        def b2brInterpreter(targetFilePath):
+            targetFileContent = []
+            outputFilePath = targetFilePath.with_stem(targetFilePath.stem + "_binary2brainrot")
+            with targetFilePath.open("r") as tf:
+                for line in tf:
+                    targetFileContent.append(line)
+
+            targetFileContent = [
+                ''.join('\t' if bit == '1' else ' ' if bit == '0' else bit for bit in line)
+                  for line in targetFileContent
+            ]    #Convert BrainRot to Binary
+
+            with outputFilePath.open("w") as of:
+                for line in targetFileContent:
+                    of.write(line)
+
+            print(f"[\033[32mOK\033[0m] File save to: {outputFilePath}")
+
+        targetFilePath = Path(currentDir / targetFile).resolve()
+        if targetFilePath.exists():
+            b2brInterpreter(targetFilePath)
+            return
+
+        targetFilePath = Path(targetFile).resolve() 
+        if targetFilePath.exists():
+            b2brInterpreter(targetFilePath)
+            return
+        
+        print(f"[\033[31mFAILED\033[0m] No file was found!")
+
+def catFile(targetFile):
+    global currentDir
+    if not targetFile:
+        print("Welcome to cat! Please provide the file path!")
+        print("For more information, go to https://github.com/jammyjunior/BrainRot.")
+    else:
+        targetFileDir = Path(currentDir / targetFile).resolve()
+        if targetFileDir.exists():
+            with targetFileDir.open("r") as file:
+                for line in file:
+                    print(line, end="")
+            return
+
+        targetFileDir = Path(targetFile).resolve() 
+        if targetFileDir.exists():
+            with targetFileDir.open("r") as file:
+                for line in file:
+                    print(line)
+            return
+        
+        print(f"[\033[31mFAILED\033[0m] No file was found!")
+
+
 def changeDirCommand(targetDir):
     global currentDir
-
     if not targetDir:
         currentDir = Path.home()
         return
@@ -113,15 +199,10 @@ def exitCommand(_=None):
     print("Exiting...")
     exit()
 
-def brainrot2binary():
-    print("Hello from BrainRot2Binary!")
-
-def binary2brainrot():
-    print("Hello from Binary2BrainRot!")
-
 def main():
+    global currentDir
     while True:
-        inputCommand = newCommand()
+        inputCommand = input(f"\033[1;32;40minterpreter@brainrot\033[0m: \033[1;32;34m{currentDir}\033[0m$ ").split()
         if not inputCommand:
             continue
 
@@ -133,7 +214,6 @@ def main():
             continue
 
         else:
-            # Navigate to the file to translate it
             print("Unknown Command!")
         
 
@@ -146,14 +226,18 @@ greetMessage = """
 
 Welcome to BrainRot interpreter!
 """
+
 brainrotCommand = {
+    brainrot: ("BrainRot", "brainrot", "br"),
+    brainrot2binary: ("br2b", "BR2B", "BrainRot2Binary", "brainrot2binary"),
+    binary2brainrot: ("b2br", "B2BR", "Binary2BrainRot", "binary2brainrot"),
+    catFile: {"c", "cat"}, 
     changeDirCommand: ("cd", "CD"),
     listDirContent: ("ls", "LS"),
-    brainrot: ("BrainRot", "brainrot", "br"), 
     brainrot2binary: ("BrainRot2Binary", "brainrot2binary", "br2b"), 
     binary2brainrot: ("Binary2BrainRot", "binary2brainrot", "b2br"),
     exitCommand: ("e", "E", "exit", "Exit", "EXIT")
-}
+    }
 
 commandList = {
     alias: func
@@ -162,7 +246,11 @@ commandList = {
 }
 
 if __name__ == "__main__":
+    currentDir = Path(__file__).resolve().parent
     print(greetMessage)
     main()
-            
+
+
+# Made by JammyJunior
+# https://github.com/jammyjunior
             
