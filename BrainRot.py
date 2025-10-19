@@ -198,7 +198,7 @@ def helpCommand(_=None):
     cd        :Change directory
     exit      :Exit the interpreter
     help      :Show help
-    list      :List directory contents
+    ls      :List directory contents
           
     Note: After 'br', 'br2b', 'b2br', 'cat', 'cd', please provide the target file path or directory. 
     For more information, go to https://github.com/jammyjunior/BrainRot.
