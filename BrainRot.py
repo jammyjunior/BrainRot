@@ -31,7 +31,6 @@ def interpreter(inputValues):
     if valuesOutput:
         print(valuesOutput)
 
-
 def brainrot(targetFile):
     global currentDir
     if not targetFile:
@@ -153,7 +152,6 @@ def catFile(targetFile):
         
         print(f"[\033[31mFAILED\033[0m] No file was found!")
 
-
 def changeDirCommand(targetDir):
     global currentDir
     if not targetDir:
@@ -189,6 +187,22 @@ def changeDirCommand(targetDir):
     else:
         print(f"[\033[31mERROR\033[0m] cd: {targetDir}: No such file or directory")
         return
+    
+def helpCommand(_=None):
+    print("""
+    br        :Run the BrainRot interpreter
+    br2b      :Run the BrainRot2Binary interpreter
+    b2br      :Run the Binary2BrainRot interpreter
+    cat       :Show file content
+    clear     :Clear the terminal
+    cd        :Change directory
+    exit      :Exit the interpreter
+    help      :Show help
+    list      :List directory content
+          
+    Note: After 'br', 'br2b', 'b2br', 'cat', 'cd', please provide the target file path or directory. 
+    For more information, go to https://github.com/jammyjunior/BrainRot.
+    """)
 
 def listDirContent(_=None):
     global currentDir
@@ -198,7 +212,7 @@ def listDirContent(_=None):
     print("\t".join(dirContentFiles))
 
 def clearCommand(_=None):
-    if os.name == 'nt': # For Windows
+    if platform.system() == "Windows": # For Windows
         _ = os.system('cls')
     else:               # For macOS and Linux
         _ = os.system('clear')
@@ -225,16 +239,16 @@ def main():
         else:
             print("Unknown Command!")
         
-
-greetMessage = """
+greetMessage = f"""
      ############################
     #                            #
     #          BrainRot          #
     #                            #
      ############################
 
-Welcome to BrainRot interpreter!
-"""
+Version: 0.1.0
+OS: {platform.system()}
+Welcome to BrainRot interpreter! For a new user, type "help" for help, "exit" to exit the interpreter."""
 
 brainrotCommand = {
     brainrot: ("BrainRot", "brainrot", "br"),
@@ -243,9 +257,8 @@ brainrotCommand = {
     catFile: {"c", "cat"}, 
     clearCommand: {"clear", "cls"},
     changeDirCommand: ("cd", "CD"),
+    helpCommand: {"h", "help"},
     listDirContent: ("ls", "LS"),
-    brainrot2binary: ("BrainRot2Binary", "brainrot2binary", "br2b"), 
-    binary2brainrot: ("Binary2BrainRot", "binary2brainrot", "b2br"),
     exitCommand: ("e", "E", "exit", "Exit", "EXIT")
     }
 
@@ -259,6 +272,8 @@ if __name__ == "__main__":
     currentDir = Path(__file__).resolve().parent
     print(greetMessage)
     main()
+
+
 
 
 # Made by JammyJunior
