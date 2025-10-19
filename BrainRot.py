@@ -140,13 +140,15 @@ def catFile(targetFile):
             with targetFileDir.open("r") as file:
                 for line in file:
                     print(line, end="")
+                    print()
             return
 
         targetFileDir = Path(targetFile).resolve() 
         if targetFileDir.exists():
             with targetFileDir.open("r") as file:
                 for line in file:
-                    print(line)
+                    print(line, end="")
+                    print()
             return
         
         print(f"[\033[31mFAILED\033[0m] No file was found!")
