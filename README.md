@@ -28,7 +28,7 @@ If you see this one, congrats, now you can start using BrainRot interpreter.
 
 ![1001](.README/1001.png)
 
-# Knownledge
+# Acknowledgement
 Comming soon
 
 # User Guide
