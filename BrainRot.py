@@ -1,6 +1,7 @@
 from src import ASCII_dict
 from pathlib import Path
 import platform
+import os
 
 def interpreter(inputValues):
     inputValues = ''.join('1' if bit == '\t' else '0' if bit == ' ' else bit for bit in inputValues)    #Convert BrainRot to Binary
@@ -194,6 +195,12 @@ def listDirContent(_=None):
     print(f"\033[94m{"\t".join(dirContentFolders)}\033[0m")
     print("\t".join(dirContentFiles))
 
+def clearCommand(_=None):
+    if os.name == 'nt': # For Windows
+        _ = os.system('cls')
+    else:               # For macOS and Linux
+        _ = os.system('clear')
+    return
 
 def exitCommand(_=None):
     print("Exiting...")
@@ -232,6 +239,7 @@ brainrotCommand = {
     brainrot2binary: ("br2b", "BR2B", "BrainRot2Binary", "brainrot2binary"),
     binary2brainrot: ("b2br", "B2BR", "Binary2BrainRot", "binary2brainrot"),
     catFile: {"c", "cat"}, 
+    clearCommand: {"clear", "cls"},
     changeDirCommand: ("cd", "CD"),
     listDirContent: ("ls", "LS"),
     brainrot2binary: ("BrainRot2Binary", "brainrot2binary", "br2b"), 
