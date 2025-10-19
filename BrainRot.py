@@ -193,12 +193,12 @@ def helpCommand(_=None):
     br        :Run the BrainRot interpreter
     br2b      :Run the BrainRot2Binary interpreter
     b2br      :Run the Binary2BrainRot interpreter
-    cat       :Show file content
+    cat       :Show file contents
     clear     :Clear the terminal
     cd        :Change directory
     exit      :Exit the interpreter
     help      :Show help
-    list      :List directory content
+    list      :List directory contents
           
     Note: After 'br', 'br2b', 'b2br', 'cat', 'cd', please provide the target file path or directory. 
     For more information, go to https://github.com/jammyjunior/BrainRot.
